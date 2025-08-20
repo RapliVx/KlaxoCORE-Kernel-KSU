@@ -1163,7 +1163,7 @@ SYSCALL_DEFINE1(newuname, struct new_utsname __user *, name)
 	if (copy_to_user(name, &tmp, sizeof(tmp)))
 		return -EFAULT;
 
-	override_custom_release(name->release, sizeof(name->release));
+override_release(name->release, sizeof(name->release));
 	if (override_release(name->release, sizeof(name->release)))
 		return -EFAULT;
 	if (override_architecture(name))

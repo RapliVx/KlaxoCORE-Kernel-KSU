@@ -39,7 +39,6 @@ static int cmdline_proc_show(struct seq_file *m, void *v)
 	}
 #endif
 	seq_printf(m, "%s\n", saved_command_line);
-#endif
 	return 0;
 }
 
