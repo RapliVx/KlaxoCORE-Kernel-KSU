@@ -18,27 +18,6 @@
 #include <asm/uaccess.h>
 #include <asm/unistd.h>
 
-#if defined(CONFIG_KSU_SUSFS_SUS_KSTAT) || defined(CONFIG_KSU_SUSFS_SUS_MOUNT)
-#include <linux/susfs_def.h>
-#endif
-
-#ifdef CONFIG_KSU_SUSFS_SUS_KSTAT
-extern void susfs_sus_ino_for_generic_fillattr(unsigned long ino, struct kstat *stat);
-#endif
-
-#if defined(CONFIG_KSU) && defined(CONFIG_KSU_TRACEPOINT_HOOK)
-#include <../drivers/kernelsu/ksu_trace.h>
-#endif
-
-/**
- * generic_fillattr - Fill in the basic attributes from the inode struct
- * @inode: Inode to use as the source
- * @stat: Where to fill in the attributes
- *
- * Fill in the basic attributes in the kstat structure from data that's to be
- * found on the VFS inode structure.  This is the default if no getattr inode
- * operation is supplied.
- */
 void generic_fillattr(struct inode *inode, struct kstat *stat)
 {
 #ifdef CONFIG_KSU_SUSFS_SUS_KSTAT
@@ -335,8 +314,8 @@ SYSCALL_DEFINE4(newfstatat, int, dfd, const char __user *, filename,
 	struct kstat stat;
 	int error;
 
-#if defined(CONFIG_KSU) && defined(CONFIG_KSU_TRACEPOINT_HOOK)
-	trace_ksu_trace_stat_hook(&dfd, &filename, &flag);
+#ifdef CONFIG_KSU
+	ksu_handle_stat(&dfd, &filename, &flag);
 #endif
 
 	error = vfs_fstatat(dfd, filename, &stat, flag);
@@ -481,8 +460,8 @@ SYSCALL_DEFINE4(fstatat64, int, dfd, const char __user *, filename,
 	struct kstat stat;
 	int error;
 
-#if defined(CONFIG_KSU) && defined(CONFIG_KSU_TRACEPOINT_HOOK)
-	trace_ksu_trace_stat_hook(&dfd, &filename, &flag); /* 32-bit su support */
+#ifdef CONFIG_KSU
+	ksu_handle_stat(&dfd, &filename, &flag); /* 32-bit su support */
 #endif
 
 	error = vfs_fstatat(dfd, filename, &stat, flag);
